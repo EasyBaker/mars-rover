@@ -102,7 +102,7 @@ public class Rover
                x -= distance;
                y += distance;
            }
-           energy -= 1;
+           energy -= Math.abs(distance);
            System.out.println(this.name + " moved forward");
        } else if (isAlive == false) {
            System.out.println(this.name + " can't move. It's ded.");
@@ -113,8 +113,8 @@ public class Rover
     
     public void moveTo(int x, int y)
     {
-        distancex = this.x - x;
-        distancey = this.y - y;
+        int distancex = this.x - x;
+        int distancey = this.y - y;
         
         if (distancex > 0 && distancey > 0) {
             if (dir != 1) {
@@ -141,12 +141,12 @@ public class Rover
         System.out.println(this.name + " teleports to (" + x + "," + y + ").");
     }
     
-    private void getDirectionName()
+    private String getDirectionName()
     {
         if (dir == 0) {
-            this.direction = "North";
+            return "North";
         } else if (dir == 1) {
-            this.direction = "Northeast";
+            return "Northeast";
         } else if (dir == 2) {
             this.direction = "East";
         } else if (dir == 3) {
@@ -168,7 +168,7 @@ public class Rover
                 numPics += 1;
                 memory += 1;
                 this.energy -= 1;
-                System.out.println(this.name + " took a picture at [" + this.x + ", " + this.y + "] facing " + this.direction);
+                System.out.println(this.name + " took a picture at [" + this.x + ", " + this.y + "] facing " + getDirectionName());
             } else {
                 System.out.println(this.name + " cannot take a picture, it has no spare memory.");
             }
@@ -194,6 +194,11 @@ public class Rover
     
     public void charge(double charge) {
         energy += charge;
+        
+        if (energy > maxCharge) {
+            this.catchOnFireAndThenExplode();
+        }
+        
         System.out.println(this.name + " charges up " + charge + " energy.");
     }
     
@@ -210,10 +215,10 @@ public class Rover
                 System.out.println(other.name + " cannot be attacked, because it's ded.");
             } else if (energy == 0) {
                 System.out.println(other.name + " cannot be attacked, because it's out of energy.");
-            } else if (isAlive == false) {
+            } else if (other.isAlive == false) {
                 System.out.println(this.name + " cannot attack " + other.name + " because it's ded.");
-            } else if (energy == 0) {
-                System.out.println(this.name + " cannot attack " + other.name + " because it has no energy.");
+            } else if (other.energy == 0) {
+                System.out.println(other.name + " cannot be attacked because it has no energy and that's just not fair.");
             }
         }
     }
