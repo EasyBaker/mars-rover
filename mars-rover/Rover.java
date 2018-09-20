@@ -11,7 +11,7 @@ public class Rover
     private double x;
     private double y;
     private double distance;
-    private double dir;
+    private int dir;
     private double numPics;
     private double memory;
     private double energy;
@@ -19,11 +19,6 @@ public class Rover
     private double health;
     private double damage;
     private double rotation;
-    private double distancex;
-    private double distancey;
-    private double distancerotate;
-    private double distancerotater;
-    private double distancerotatel;
     private String name;
     private String direction;
     private String side;
@@ -42,7 +37,7 @@ public class Rover
         this.isAlive = true;
     }
 
-    public Rover(String name, double x, double y, double dir)
+    public Rover(String name, double x, double y, int dir)
     {
         this.x = x;
         this.y = y;
@@ -56,31 +51,29 @@ public class Rover
     
     public void rotate(double rotation)
     {
-       if (isAlive && energy > 0) {
-           dir += rotation;
-           energy -= 1;
-       } else {
-           System.out.println(this.name + " can't rotate, it's ded.");
-       }
-        
-       if (rotation < 0) {
-           side = "left";
-       } else if (rotation > 0) {
-           side = "right";
-       }
-       
-       if (dir == 8) {
-           dir = 0;
-       } else if (dir == -1) {
-           dir = 7;
-       }
-       
-       System.out.println(this.name + " turned to the " + side);
+       if(energy > 0){
+            if(isAlive) {
+                this.dir += rotation;
+                energy -= 1;
+                if (this.dir >= 8) {
+                    this.dir = (dir % 8);
+                    System.out.println(name + " turned to the right " + Math.abs(rotation) + " to face " + getDirectionName() + "."); 
+                } else if (this.dir < 0) {
+                    this.dir = 8 - (Math.abs(dir) % 8);
+                    System.out.println(name + " turned to the left " + Math.abs(rotation) + " to face " + getDirectionName() + "."); 
+                } else {
+                    System.out.println(name + " turned to the right " + Math.abs(rotation) + " to face " + getDirectionName() + "."); 
+                }
+            }
+            else {
+                System.out.println(this.name + " cannot rotate, it's ded.");
+            }
+        } else System.out.println(this.name + " cannot rotate, it has no energy.");
     }
     
     public void move(double distance)
     {
-        if (isAlive && energy > 0) {
+       if (isAlive && energy > 0) {
            if (dir == 0) {
                y += distance;
            } else if (dir == 1) {
@@ -111,27 +104,23 @@ public class Rover
         }
     }
     
-    public void moveTo(int x, int y)
-    {
-        int distancex = this.x - x;
-        int distancey = this.y - y;
-        
-        if (distancex > 0 && distancey > 0) {
-            if (dir != 1) {
-                distancerotate = Math.abs(dir - 8);
-                if (distancerotate > 4) {
-                    distancerotater = Math.abs(distancerotate - 8);
-                    this.rotate(distancerotater);
-                    System.out.println(this.name + " rotates " + distancerotater + " to the right");
-                    while (this.x != x && this.y != y) {
-                        this.move(distance);
-                    }
-                    if (this.x == x || this.y == y) {
-                        this.moveTo(x, y);
-                    }
-                }
-            }
-        }
+    /** this function takes an integer and rotates the rover to move to the given point as efficiently as possible
+     * @param moveTo is the function which takes the x and y coordinate and moves the rover as efficiently as possible to the desired x and y value.
+     */
+     public void moveTo(int x, int y) { 
+            rotate(-this.dir);
+            move(y - this.y);
+            rotate(2);
+            move(x - this.x);
+    }
+    
+    /** this function initiates the rover to take the most efficient way back home using the moveTo function above.
+     * @param moveTo is the function which takes the x and y coordinate and moves the rover as efficiently as possible to the desired x and y value.
+     * @param goHome makes the rover efficiently move to the coordinate (0,0)
+     */
+    public void goHome() { 
+        moveTo(0, 0);
+        System.out.println(name + " went home ");
     }
     
     public void teleport(int x, int y)
@@ -141,25 +130,12 @@ public class Rover
         System.out.println(this.name + " teleports to (" + x + "," + y + ").");
     }
     
-    private String getDirectionName()
-    {
-        if (dir == 0) {
-            return "North";
-        } else if (dir == 1) {
-            return "Northeast";
-        } else if (dir == 2) {
-            this.direction = "East";
-        } else if (dir == 3) {
-            this.direction = "Southeast";
-        } else if (dir == 4) {
-            this.direction = "South";
-        } else if (dir == 5) {
-            this.direction = "Southwest";
-        } else if (dir == 6) {
-            this.direction = "West";
-        } else if (dir == 7) {
-            this.direction = "Northwest";
-        }
+    /** this allows the program to output a cardinal direction onto the screen given the input the computer received and calculated in the rotation function.
+     * directionArray are the cardinal directions allowed in the rover.
+     */
+    private String getDirectionName() { 
+          String[] directionArray = {"North", "Northeast", "East", "Southeast", "South", "Southwest", "West", "Northwest"};
+        return directionArray[this.dir];
     }
     
     public void takePicture() {
@@ -194,11 +170,7 @@ public class Rover
     
     public void charge(double charge) {
         energy += charge;
-        
-        if (energy > maxCharge) {
-            this.catchOnFireAndThenExplode();
-        }
-        
+ 
         System.out.println(this.name + " charges up " + charge + " energy.");
     }
     

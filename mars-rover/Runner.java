@@ -57,10 +57,10 @@ public class Runner
                     
                     if (target != null) {
                         actor.kill(target);
-                        System.out.println(target);
+                        System.out.print(target);
                     }
                     else {
-                        System.out.println("Error: No such target.");
+                        System.out.print("Error: No such target.");
                     }
                 }
                 else if (command.equals("battle")) {
@@ -74,7 +74,7 @@ public class Runner
                         System.out.println(target);
                     }
                     else {
-                        System.out.println("Error: No such target.");
+                        System.out.print("Error: No such target.");
                     }
                 }
                 else if (command.equals("revive")) {
@@ -85,10 +85,10 @@ public class Runner
                     
                     if (target != null) {
                         actor.revive(target);
-                        System.out.println(target);
+                        System.out.print(target);
                     }
                     else {
-                        System.out.println("Error: No such target.");
+                        System.out.print("Error: No such target.");
                     }
                 }
                 else if (command.equals("take picture")) {
@@ -97,7 +97,23 @@ public class Runner
                 else if (command.equals("transmit picture")) {
                     actor.transmitPictures();
                 }
-                else {
+                else if (command.equals("move to")) {
+                    System.out.print("Enter the name the x value that you want to move to: ");
+                    int x = input.readInt();
+                    System.out.print("Enter the name the y value that you want to move to: ");
+                    int y = input.readInt();
+                    
+                    actor.moveTo(x, y);
+                }
+                else if (command.equals("charge")) {   
+                    System.out.print("Enter how much you want to charge up: ");
+                    double charge = input.readDouble();
+                    actor.charge(charge);
+                }
+                else if (command.equals("go home")) {
+                    actor.goHome();
+                }
+                else {  
                     System.out.println("Error: Invalid command.");
                 }
                 
